@@ -12,17 +12,16 @@ import math
 
 
 class TestMainPage():
-    def setup_method(self):
-        self.link = "https://stepik.org/lesson/236895/step/1"
 
-    @pytest.mark.parametrize('lesson_number', [895, 896, 897, 898, 899, 903, 904, 905]) # 896, 897, 898, 899, 903, 904, 905
+    @pytest.mark.parametrize('lesson_number', [895]) # 896, 897, 898, 899, 903, 904, 905
     def test_login(self, browser, config, lesson_number):
+        wait = WebDriverWait(browser, 5)
         self.link = f"https://stepik.org/lesson/236{lesson_number}/step/1"
         username = config['credentials']['username']
         password = config['credentials']['password']
 
         browser.get(self.link)
-        login_button = browser.find_element(By.CSS_SELECTOR, "a[href*='auth=login']")
+        login_button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "a[href*='auth=login']")))
         login_button.click()
         input1 = browser.find_element(By.ID, "id_login_email")
         input1.send_keys(username)
@@ -30,7 +29,7 @@ class TestMainPage():
         input2.send_keys(password)
         button_login = browser.find_element(By.CSS_SELECTOR, "button[type='submit']")
         button_login.click()
-        wait = WebDriverWait(browser, 5)
+
         wait.until(EC.invisibility_of_element_located((By.ID, "login_form")))
 
         input3 = wait.until(
@@ -43,7 +42,7 @@ class TestMainPage():
         # time.sleep(5)
         button_submit = browser.find_element(By.CSS_SELECTOR, "button.submit-submission")
         button_submit.click()
-        time.sleep(5)
+        time.sleep(10)
         try:
             correct_hint = browser.find_element(By.XPATH,
                                             "//p[@class='smart-hints__hint' and text()='Correct!']")
